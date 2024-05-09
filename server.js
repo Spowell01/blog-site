@@ -5,20 +5,23 @@ const SequelizeStore = require("connect-session-sequelize")(session.Store);
 const routes = require("./controllers");
 const sequelize = require("./config/connection");
 const exphbs = require("express-handlebars");
+const path = require("path"); // Importing the path module
 const hbs = exphbs.create({ helpers: require("./utils/helpers") });
-// Require dotenv for environment variables
-require("dotenv").config();
 
 // Creating express app and setting port
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+const layoutPath = path.join(__dirname, "views/layouts/main.handlebars");
+console.log("Layout path:", layoutPath);
+
+// Set the directory where views are stored
+app.set("views", path.join(__dirname, "views"));
+
 // Setting up session object with secret, cookie, and store
 const sess = {
-  secret: process.env.SECRET || "Super secret secret",
-  cookie: {
-    // Add any cookie options you may need (e.g., secure, maxAge, etc.)
-  },
+  secret: "Super secret secret",
+  cookie: {},
   resave: false,
   saveUninitialized: true,
   store: new SequelizeStore({
@@ -33,10 +36,10 @@ app.use(session(sess));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serving static files from public directory
+// IMPORTANT FOR PUBLIC FOLDERS - serving static files such as images from public directory
 app.use(express.static("public"));
 
-// Setting up Handlebars as the view engine
+// Setting up Handlebars view engine
 app.engine("handlebars", hbs.engine);
 app.set("view engine", "handlebars");
 
@@ -44,13 +47,6 @@ app.set("view engine", "handlebars");
 app.use(routes);
 
 // Syncing sequelize models with database and starting server
-sequelize
-  .sync({ force: false })
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Listening on PORT ${PORT}`);
-    });
-  })
-  .catch((error) => {
-    console.error("Error syncing Sequelize models:", error);
-  });
+sequelize.sync({ force: false }).then(() => {
+  app.listen(PORT, () => console.log(`Listening on PORT ${PORT}`));
+});
