@@ -5,19 +5,11 @@ const SequelizeStore = require("connect-session-sequelize")(session.Store);
 const routes = require("./controllers");
 const sequelize = require("./config/connection");
 const exphbs = require("express-handlebars");
-const path = require("path"); // Importing the path module
 const hbs = exphbs.create({ helpers: require("./utils/helpers") });
-
 // Creating express app and setting port
+
 const app = express();
 const PORT = process.env.PORT || 3001;
-
-const layoutPath = path.join(__dirname, "views/layouts/main.handlebars");
-console.log("Layout path:", layoutPath);
-
-// Set the directory where views are stored
-app.set("views", path.join(__dirname, "views"));
-
 // Setting up session object with secret, cookie, and store
 const sess = {
   secret: "Super secret secret",
@@ -31,21 +23,26 @@ const sess = {
 
 // Using session middleware with session object
 app.use(session(sess));
-
 // Parsing incoming JSON and URL-encoded data
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 // IMPORTANT FOR PUBLIC FOLDERS - serving static files such as images from public directory
 app.use(express.static("public"));
-
-// Setting up Handlebars view engine
 app.engine("handlebars", hbs.engine);
 app.set("view engine", "handlebars");
 
+// Using session middleware again with a different session object
+app.use(
+  session({
+    secret: process.env.SECRET,
+    store: new SequelizeStore({ db: sequelize }),
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 // Using routes from controller
 app.use(routes);
-
 // Syncing sequelize models with database and starting server
 sequelize.sync({ force: false }).then(() => {
   app.listen(PORT, () => console.log(`Listening on PORT ${PORT}`));
