@@ -1,25 +1,20 @@
-<main class="container mt-5">
-  <h1 class="mb-4">Login</h1>
-  <form class="login-form">
-    <div class="mb-3">
-      <label for="username" class="form-label">Username</label>
-      <input
-        type="text"
-        class="form-control"
-        id="username-login"
-        placeholder="Username"
-      />
-    </div>
-    <div class="mb-3">
-      <label for="password" class="form-label">Password</label>
-      <input
-        type="password"
-        class="form-control"
-        id="password-login"
-        placeholder="Password"
-      />
-    </div>
-    <button type="submit" class="btn btn-primary">Log In</button>
-  </form>
+<div class="column">
+<h2 class="title pb-4">login:</h2><hr>
+<form class="login-form">
+  <div>
+    <label for="email-login">email:</label>
+    <input type="text" id="email-login" />
+  </div>
+  <div>
+    <label for="password-login">password:</label>
+    <input type="password" id="password-login" />
+  </div>
+  <div>
+    <button type="submit" class="button is-primary">login</button>
+    <a href="/signup"><button type="button" class="button is-danger">signup</button></a>
+  </div>
+</form>
+</div>
 
-</main>
+<!-- javascript file-->
+<script src="/javascript/login.js"></script>
